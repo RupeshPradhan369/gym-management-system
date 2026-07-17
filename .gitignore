@@ -1,0 +1,23 @@
+# Virtual environment
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Environment secrets — NEVER commit real credentials
+.env
+.env.local
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
