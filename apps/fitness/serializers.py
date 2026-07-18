@@ -73,12 +73,11 @@ class WorkoutPlanSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'trainer', 'created_at']
 
     def create(self, validated_data):
-        exercises_data = validated_data.pop('exercises')
-        request = self.context['request']
-        plan = WorkoutPlan.objects.create(trainer=request.user, **validated_data)
-        for ex_data in exercises_data:
-            WorkoutExercise.objects.create(workout_plan=plan, **ex_data)
-        return plan
+      exercises_data = validated_data.pop('exercises')
+      plan = WorkoutPlan.objects.create(**validated_data)
+      for ex_data in exercises_data:
+        WorkoutExercise.objects.create(workout_plan=plan, **ex_data)
+      return plan
 
 
 class MealSerializer(serializers.ModelSerializer):
@@ -103,8 +102,7 @@ class DietPlanSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         meals_data = validated_data.pop('meals')
-        request = self.context['request']
-        plan = DietPlan.objects.create(trainer=request.user, **validated_data)
+        plan = DietPlan.objects.create(**validated_data)
         for meal_data in meals_data:
             Meal.objects.create(diet_plan=plan, **meal_data)
         return plan
