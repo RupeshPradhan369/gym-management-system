@@ -71,8 +71,8 @@ class StaffProfileSerializer(serializers.ModelSerializer):
             'id', 'user', 'employee_code', 'designation', 'hired_date', 'specialization',
             'username', 'email', 'password', 'first_name', 'last_name', 'role',
         ]
-        read_only_fields = ['id']
-
+        read_only_fields = ['id', 'employee_code']
+        
     def create(self, validated_data):
         role = validated_data.pop('role')
         user = User.objects.create_user(
