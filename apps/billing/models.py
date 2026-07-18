@@ -19,7 +19,7 @@ class Invoice(models.Model):
     invoice_number = models.CharField(max_length=30, unique=True, editable=False)
     member = models.ForeignKey(User, on_delete=models.PROTECT, related_name='invoices', limit_choices_to={'role': 'member'})
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.UNPAID)
-    issued_date = models.DateField(default=timezone.now)
+    issued_date = models.DateField(default=timezone.localdate)
     due_date = models.DateField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='invoices_created')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,7 +105,7 @@ class Expense(models.Model):
     category = models.CharField(max_length=20, choices=Category.choices)
     description = models.CharField(max_length=255, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    expense_date = models.DateField(default=timezone.now)
+    expense_date = models.DateField(default=timezone.localdate)
     recorded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='expenses_recorded')
     created_at = models.DateTimeField(auto_now_add=True)
 
