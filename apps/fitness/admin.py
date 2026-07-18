@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Goal, BodyMeasurement, ProgressReport, Exercise,
-    WorkoutPlan, WorkoutExercise, DietPlan, Meal,
+    WorkoutPlan, WorkoutExercise, DietPlan, Meal,TrainerAssignment,
 )
 
 
@@ -51,3 +51,10 @@ class DietPlanAdmin(admin.ModelAdmin):
     list_display = ('title', 'member', 'trainer', 'is_active')
     list_filter = ('is_active',)
     inlines = [MealInline]
+
+
+@admin.register(TrainerAssignment)
+class TrainerAssignmentAdmin(admin.ModelAdmin):
+    list_display = ('member', 'trainer', 'is_active', 'start_date', 'end_date')
+    list_filter = ('is_active',)
+    search_fields = ('member__username', 'trainer__username')

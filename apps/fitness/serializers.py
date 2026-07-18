@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Goal, BodyMeasurement, ProgressReport, Exercise,
-    WorkoutPlan, WorkoutExercise, DietPlan, Meal,
+    WorkoutPlan, WorkoutExercise, DietPlan, Meal, TrainerAssignment,
 )
 
 
@@ -108,3 +108,13 @@ class DietPlanSerializer(serializers.ModelSerializer):
         for meal_data in meals_data:
             Meal.objects.create(diet_plan=plan, **meal_data)
         return plan
+    
+
+class TrainerAssignmentSerializer(serializers.ModelSerializer):
+    member_username = serializers.CharField(source='member.username', read_only=True)
+    trainer_username = serializers.CharField(source='trainer.username', read_only=True)
+
+    class Meta:
+        model = TrainerAssignment
+        fields = ['id', 'member', 'member_username', 'trainer', 'trainer_username', 'is_active', 'start_date', 'end_date', 'created_at']
+        read_only_fields = ['id', 'created_at']
