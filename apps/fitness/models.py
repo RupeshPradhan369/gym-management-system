@@ -147,3 +147,25 @@ class Meal(models.Model):
 
     def __str__(self):
         return f"{self.meal_type} — {self.diet_plan.title}"
+    
+
+class TrainerAssignment(models.Model):
+    """
+    Links a member to a trainer for personal training.
+    Created when a member purchases a PT package (via billing).
+    A member can have PT history with different trainers over time,
+    but only ONE active assignment at a time.
+    """
+    member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trainer_assignments', limit_choices_to={'role': 'member'})
+    trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_members', limit_choices_to={'role': 'trainer'})
+    is_active = models.BooleanField(default=True)
+    start_date = models.DateField(default=timezone.localdate)
+    end_date = models.DateField(null=True, blank=True)
+    assigned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='pt_assignments_made')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.member.username} → {self.trainer.username} ({'active' if self.is_active else 'ended'})"
