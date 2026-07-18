@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/', include('apps.identity.urls')),
     path('api/', include('apps.membership.urls')),
     path('api/', include('apps.attendance.urls')),
+    path('api/', include('apps.dashboard.urls')),
 ]
 
 if settings.DEBUG:
