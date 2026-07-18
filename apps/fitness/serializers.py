@@ -29,6 +29,14 @@ class BodyMeasurementSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'recorded_by']
 
+    def get_fields(self):
+        fields = super().get_fields()
+        request = self.context.get('request')
+        # Members can't choose whose measurement this is — always their own
+        if request and request.user.role == 'member':
+            fields['member'].read_only = True
+        return fields
+
 
 class ProgressReportSerializer(serializers.ModelSerializer):
     member_username = serializers.CharField(source='member.username', read_only=True)
