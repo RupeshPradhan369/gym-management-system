@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Invoice, Payment, Expense
 from .serializers import InvoiceSerializer, PaymentSerializer, ExpenseSerializer
 from apps.identity.permissions import IsAdminOrReceptionist, IsAdmin
+from apps.notifications.services import notify
+from apps.notifications.models import Notification
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
@@ -28,7 +30,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         """
         POST /invoices/{id}/record_payment/  body: {"amount": ..., "method": "cash"}
         For cash/card payments taken at the counter — marks success immediately.
-        eSewa uses a separate initiate/callback flow (built next).
+        eSewa uses a separate initiate/callback flow (to be built later).
         """
         invoice = self.get_object()
         payment = Payment.objects.create(
@@ -44,6 +46,13 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         else:
             invoice.status = Invoice.Status.PARTIALLY_PAID
         invoice.save()
+
+        notify(
+            user=invoice.member,
+            title="Payment received",
+            body=f"We received your payment of Rs. {payment.amount} for invoice {invoice.invoice_number}.",
+            notification_type=Notification.NotificationType.PAYMENT_SUCCESS,
+        )
 
         return Response(InvoiceSerializer(invoice, context={'request': request}).data)
 
