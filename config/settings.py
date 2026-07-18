@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.attendance',
     'apps.dashboard',
     'apps.billing',
+    'apps.fitness',
 ]
 
 MIDDLEWARE = [
