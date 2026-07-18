@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include('apps.attendance.urls')),
     path('api/', include('apps.dashboard.urls')),
     path('api/', include('apps.billing.urls')),
+    path('api/', include('apps.fitness.urls')),
 ]
 
 if settings.DEBUG:
