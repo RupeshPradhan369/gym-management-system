@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('apps.identity.urls')),
     path('api/', include('apps.membership.urls')),
+    path('api/', include('apps.attendance.urls')),
 ]
 
 if settings.DEBUG:
