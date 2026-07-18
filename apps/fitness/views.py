@@ -14,18 +14,20 @@ from apps.identity.permissions import IsTrainer, IsAdmin, IsAdminOrReceptionist,
 
 
 class GoalViewSet(viewsets.ModelViewSet):
-    """Members create/manage their OWN goals. Trainers/admins can view all."""
     queryset = Goal.objects.select_related('member').all()
     serializer_class = GoalSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role == 'member':
-            return self.queryset.filter(member=self.request.user)
-        return self.queryset  # trainers/admins see everyone's goals
+        user = self.request.user
+        if user.role == 'member':
+            return self.queryset.filter(member=user)
+        if user.role == 'trainer':
+            assigned_ids = TrainerAssignment.objects.filter(trainer=user, is_active=True).values_list('member_id', flat=True)
+            return self.queryset.filter(member_id__in=assigned_ids)
+        return self.queryset  # admin sees everyone
 
     def perform_create(self, serializer):
-        # A member can only ever create a goal for themselves
         serializer.save(member=self.request.user)
 
 
