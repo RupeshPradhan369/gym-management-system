@@ -32,3 +32,28 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} → {self.user.username} ({'read' if self.is_read else 'unread'})"
+    
+
+class Announcement(models.Model):
+    """
+    Admin-created broadcast — e.g. 'Gym closed on Dashain', 'New yoga class'.
+    Posting one automatically fans out a Notification to every active member
+    (see the view, which calls notify() for each recipient).
+    """
+
+    class Audience(models.TextChoices):
+        ALL_MEMBERS = 'all_members', 'All Members'
+        ALL_STAFF = 'all_staff', 'All Staff'
+        EVERYONE = 'everyone', 'Everyone'
+
+    title = models.CharField(max_length=150)
+    body = models.TextField()
+    audience = models.CharField(max_length=20, choices=Audience.choices, default=Audience.ALL_MEMBERS)
+    posted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='announcements_posted')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
