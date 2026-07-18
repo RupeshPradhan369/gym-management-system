@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from .views import (
     GoalViewSet, BodyMeasurementViewSet, ProgressReportViewSet,
-    ExerciseViewSet, WorkoutPlanViewSet, DietPlanViewSet,
+    ExerciseViewSet, WorkoutPlanViewSet, DietPlanViewSet, TrainerAssignmentViewSet,
 )
 
 router = DefaultRouter()
@@ -11,5 +11,6 @@ router.register(r'progress-reports', ProgressReportViewSet, basename='progress-r
 router.register(r'exercises', ExerciseViewSet, basename='exercise')
 router.register(r'workout-plans', WorkoutPlanViewSet, basename='workout-plan')
 router.register(r'diet-plans', DietPlanViewSet, basename='diet-plan')
+router.register(r'trainer-assignments', TrainerAssignmentViewSet, basename='trainer-assignment')
 
 urlpatterns = router.urls
