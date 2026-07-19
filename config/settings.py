@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.fitness',
     'apps.notifications',
     'apps.messaging',
+    'apps.facility',
 ]
 
 MIDDLEWARE = [
