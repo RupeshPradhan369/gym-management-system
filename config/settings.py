@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.messaging',
     'apps.facility',
     'apps.events',
+    'apps.system',
 ]
 
 MIDDLEWARE = [
