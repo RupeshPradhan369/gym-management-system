@@ -14,9 +14,9 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
 
     def get_permissions(self):
-        if self.action in ('list', 'retrieve'):
-            return [IsAuthenticated()]
-        return [IsAdminOrReceptionist()]
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [IsAdminOrReceptionist()]
+        return [IsAuthenticated()]
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -26,17 +26,18 @@ class EventViewSet(viewsets.ModelViewSet):
         """POST /events/{id}/register/ — a member signs up for this event."""
         event = self.get_object()
 
-        if event.is_full:
-            return Response({'detail': 'This event is full.'}, status=400)
-
         existing = EventRegistration.objects.filter(event=event, member=request.user).first()
         if existing:
             if existing.status == EventRegistration.Status.CANCELLED:
-                # they cancelled before — let them re-register instead of blocking forever
+                if event.is_full:
+                    return Response({'detail': 'This event is full.'}, status=400)
                 existing.status = EventRegistration.Status.REGISTERED
                 existing.save()
                 return Response(EventRegistrationSerializer(existing).data)
             return Response({'detail': 'You are already registered for this event.'}, status=400)
+
+        if event.is_full:
+            return Response({'detail': 'This event is full.'}, status=400)
 
         registration = EventRegistration.objects.create(event=event, member=request.user)
         return Response(EventRegistrationSerializer(registration).data, status=201)
