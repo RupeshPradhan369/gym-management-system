@@ -8,24 +8,21 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Attendance, StaffAttendance, QRToken
 from .serializers import AttendanceSerializer, StaffAttendanceSerializer, QRTokenSerializer
 from apps.identity.permissions import IsAdminOrReceptionist
+from apps.system.services import get_setting
 
-QR_VALIDITY_SECONDS = 120  # 2 minutes
 
 
 class GenerateQRView(APIView):
-    """
-    GET /attendance/qr/generate/ — member requests a fresh QR token to show
-    the gym's scanner. Only usable by the member themselves.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         if request.user.role != 'member':
             return Response({'detail': 'Only members can generate check-in QR codes.'}, status=403)
 
+        validity_seconds = int(get_setting('qr_validity_seconds', default=120))
         token = QRToken.objects.create(
             member=request.user,
-            expires_at=timezone.now() + timedelta(seconds=QR_VALIDITY_SECONDS),
+            expires_at=timezone.now() + timedelta(seconds=validity_seconds),
         )
         return Response(QRTokenSerializer(token).data, status=201)
 

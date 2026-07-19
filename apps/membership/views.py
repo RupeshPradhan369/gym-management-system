@@ -9,7 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import MembershipPlan, Membership, MembershipFreeze
 from .serializers import MembershipPlanSerializer, MembershipSerializer, MembershipFreezeSerializer
 from apps.identity.permissions import IsAdmin, IsAdminOrReceptionist
-
+from apps.system.services import log_action
+from apps.system.models import AuditLog
 
 class MembershipPlanViewSet(viewsets.ModelViewSet):
     queryset = MembershipPlan.objects.all()
@@ -63,11 +64,18 @@ class MembershipViewSet(viewsets.ModelViewSet):
             membership=membership,
             freeze_start=timezone.now().date(),
             reason=request.data.get('reason', ''),
-        )
+    )
+        old_status = membership.status
         membership.status = Membership.Status.FROZEN
         membership.save()
 
-        # Re-fetch to avoid the stale prefetch-cache bug from last session
+        log_action(
+        user=request.user,
+        action=AuditLog.Action.UPDATE,
+        instance=membership,
+        changes={'status': [old_status, membership.status]},
+    )
+
         membership.refresh_from_db()
         return Response(MembershipSerializer(membership).data)
 
