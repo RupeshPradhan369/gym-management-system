@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/', include('apps.messaging.urls')),
     path('api/', include('apps.facility.urls')),
     path('api/', include('apps.events.urls')),
+    path('api/', include('apps.system.urls')),
 ]
 
 if settings.DEBUG:
